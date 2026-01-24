@@ -1,0 +1,64 @@
+<div class="playlists-container">
+  <div class="playlists-sidebar">
+    <h2>Your Playlists</h2>
+    <div class="playlist-list">
+      <div 
+        *ngFor="let playlist of playlists" 
+        class="playlist-item" 
+        [class.active]="currentPlaylist?.id === playlist.id"
+        (click)="selectPlaylist(playlist)"
+      >
+        <img [src]="playlist.coverUrl" [alt]="playlist.name" class="playlist-cover">
+        <div class="playlist-info">
+          <h4>{{ playlist.name }}</h4>
+          <p>{{ playlist.songs.length }} songs</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="playlist-details" *ngIf="currentPlaylist">
+    <div class="playlist-header">
+      <img [src]="currentPlaylist.coverUrl" [alt]="currentPlaylist.name" class="playlist-detail-cover">
+      <div class="playlist-header-info">
+        <h1>{{ currentPlaylist.name }}</h1>
+        <p>{{ currentPlaylist.description }}</p>
+        <div class="playlist-stats">
+          <span>{{ currentPlaylist.songs.length }} songs</span>
+          <span>•</span>
+          <span>{{ calculateTotalDuration(currentPlaylist.songs) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="songs-list">
+      <div class="song-header">
+        <span>#</span>
+        <span>Title</span>
+        <span>Album</span>
+        <span>Duration</span>
+        <span>Actions</span>
+      </div>
+      <div 
+        *ngFor="let song of currentPlaylist.songs; let i = index" 
+        class="song-item"
+      >
+        <span class="song-index">{{ i + 1 }}</span>
+        <div class="song-title-info">
+          <img [src]="song.coverUrl" [alt]="song.title" class="song-cover">
+          <div>
+            <h4>{{ song.title }}</h4>
+            <p>{{ song.artist }}</p>
+          </div>
+        </div>
+        <span class="song-album">{{ song.album }}</span>
+        <span class="song-duration">
+          {{ Math.floor(song.duration / 60) }}:{{ (song.duration % 60).toString().padStart(2, '0') }}
+        </span>
+        <button class="remove-btn" (click)="removeFromPlaylist(song.id)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

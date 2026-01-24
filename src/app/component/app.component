@@ -1,0 +1,31 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Add this
+import { RouterOutlet } from '@angular/router'; // Add this
+
+import { PlayerComponent } from './component/player/player.component';
+import { PlaylistComponent } from './component/playlist/playlist.component';
+import { SearchComponent } from './component/search/search.component';
+import { LibraryComponent } from './component/library/library.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true, // Add this if you created a standalone project
+  imports: [
+    CommonModule, // Required for *ngIf, *ngSwitch
+    RouterOutlet,
+    PlayerComponent,
+    PlaylistComponent,
+    SearchComponent,
+    LibraryComponent
+  ],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  activeTab = 'library';
+  showNowPlaying = false;
+  
+  setActiveTab(tab: string): void {
+    this.activeTab = tab;
+  }
+}

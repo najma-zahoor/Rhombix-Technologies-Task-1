@@ -1,0 +1,207 @@
+<div class="search-container">
+  <div class="search-header">
+    <h1>Discover Music</h1>
+    <p class="subtitle">Search and explore your music library</p>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-bar-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (input)="search()"
+        placeholder="Search songs, artists, albums..."
+        class="search-input"
+      />
+      <button *ngIf="searchQuery" class="clear-search" (click)="clearSearch()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="search-controls">
+      <div class="genre-filter">
+        <label for="genre-select">Filter by Genre:</label>
+        <select 
+          id="genre-select" 
+          [(ngModel)]="selectedGenre" 
+          (change)="filterByGenre()"
+          class="genre-select"
+        >
+          <option value="">All Genres</option>
+          <option *ngFor="let genre of genres" [value]="genre">
+            {{ genre }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Summary -->
+  <div class="results-summary" *ngIf="searchResults.length > 0">
+    <div class="summary-info">
+      <h3>Search Results</h3>
+      <span class="result-count">{{ searchResults.length }} songs found</span>
+    </div>
+    
+    <div class="result-filters">
+      <span *ngIf="searchQuery" class="active-filter">
+        <i class="fas fa-search"></i> Search: "{{ searchQuery }}"
+        <button class="remove-filter-btn" (click)="clearSearchQuery()">
+          <i class="fas fa-times"></i>
+        </button>
+      </span>
+      
+      <span *ngIf="selectedGenre" class="active-filter">
+        <i class="fas fa-filter"></i> Genre: {{ selectedGenre }}
+        <button class="remove-filter-btn" (click)="clearGenreFilter()">
+          <i class="fas fa-times"></i>
+        </button>
+      </span>
+      
+      <button *ngIf="searchQuery || selectedGenre" class="clear-all-filters" (click)="clearAllFilters()">
+        Clear All
+      </button>
+    </div>
+  </div>
+
+  <!-- Search Results -->
+  <div class="search-results">
+    <div *ngIf="searchResults.length === 0 && (searchQuery || selectedGenre)" class="no-results">
+      <div class="no-results-icon">
+        <i class="fas fa-search"></i>
+      </div>
+      <h3>No Results Found</h3>
+      <p>Try a different search term or clear your filters</p>
+      <button class="reset-btn" (click)="clearAllFilters()">
+        Reset Search
+      </button>
+    </div>
+
+    <div *ngIf="searchResults.length === 0 && !searchQuery && !selectedGenre" class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fas fa-music"></i>
+      </div>
+      <h3>Start Searching</h3>
+      <p>Enter a search term or select a genre to find music</p>
+      <div class="popular-searches">
+        <span>Try searching for:</span>
+        <div class="search-suggestions">
+          <button class="suggestion-chip" (click)="setSearchSuggestion('pop')">Pop</button>
+          <button class="suggestion-chip" (click)="setSearchSuggestion('rock')">Rock</button>
+          <button class="suggestion-chip" (click)="setSearchSuggestion('jazz')">Jazz</button>
+          <button class="suggestion-chip" (click)="setSearchSuggestion('classical')">Classical</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Grid -->
+    <div class="results-grid" *ngIf="searchResults.length > 0">
+      <div *ngFor="let song of searchResults" class="result-card">
+        <div class="result-card-header">
+          <div class="song-image">
+            <img [src]="song.coverUrl" [alt]="song.title" class="album-cover">
+            <div class="image-overlay">
+              <button class="play-btn" (click)="previewSong(song)">
+                <i class="fas fa-play"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="song-info">
+            <h4 class="song-title">{{ song.title }}</h4>
+            <p class="song-artist">{{ song.artist }}</p>
+            <div class="song-meta">
+              <span class="meta-item">
+                <i class="fas fa-compact-disc"></i>
+                {{ song.album }}
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-calendar"></i>
+                {{ song.year }}
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-clock"></i>
+                {{ formatDuration(song.duration) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-card-body">
+          <div class="song-genres">
+            <span *ngFor="let genre of song.genre" class="genre-badge">
+              {{ genre }}
+            </span>
+          </div>
+
+          <div class="song-stats">
+            <div class="stat">
+              <i class="fas fa-play-circle"></i>
+              <span>{{ formatPlays(song.plays) }} plays</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-card-footer">
+          <button class="action-btn add-to-playlist" (click)="addToPlaylist(song)">
+            <i class="fas fa-plus"></i>
+            Add to Playlist
+          </button>
+          <div class="quick-actions">
+            <button class="icon-btn" title="Play" (click)="playSong(song)">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="icon-btn" title="Favorite" (click)="toggleFavorite(song)">
+              <i class="fas fa-heart"></i>
+            </button>
+            <button class="icon-btn" title="More options">
+              <i class="fas fa-ellipsis-h"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Genre Filters -->
+    <div class="quick-filters" *ngIf="!searchQuery && !selectedGenre">
+      <h3>Browse by Genre</h3>
+      <div class="genre-chips">
+        <button 
+          *ngFor="let genre of genres" 
+          class="genre-chip"
+          (click)="selectGenre(genre)"
+        >
+          <i class="fas fa-music"></i>
+          {{ genre }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent Searches (Optional) -->
+    <div class="recent-searches" *ngIf="!searchQuery && !selectedGenre">
+      <h3>Recent Searches</h3>
+      <div class="recent-tags">
+        <span class="recent-tag">
+          The Weeknd
+          <button class="remove-tag" (click)="removeRecentSearch('The Weeknd')">
+            <i class="fas fa-times"></i>
+          </button>
+        </span>
+        <span class="recent-tag">
+          Rock
+          <button class="remove-tag" (click)="removeRecentSearch('Rock')">
+            <i class="fas fa-times"></i>
+          </button>
+        </span>
+        <span class="recent-tag">
+          Jazz Classics
+          <button class="remove-tag" (click)="removeRecentSearch('Jazz Classics')">
+            <i class="fas fa-times"></i>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

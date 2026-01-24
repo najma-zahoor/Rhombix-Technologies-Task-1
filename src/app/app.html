@@ -1,0 +1,87 @@
+<div class="app-container">
+  <!-- Header with navigation -->
+  <header class="app-header">
+    <div class="logo" (click)="setActiveTab('library')">
+      <i class="fas fa-music"></i>
+      <h1>Harmony Player</h1>
+    </div>
+    
+    <nav class="nav-tabs">
+      <button 
+        [class.active]="activeTab === 'library'" 
+        (click)="setActiveTab('library')"
+        class="nav-btn"
+      >
+        <i class="fas fa-music"></i>
+        <span class="nav-label">Library</span>
+      </button>
+      
+      <button 
+        [class.active]="activeTab === 'search'" 
+        (click)="setActiveTab('search')"
+        class="nav-btn"
+      >
+        <i class="fas fa-search"></i>
+        <span class="nav-label">Search</span>
+      </button>
+      
+      <button 
+        [class.active]="activeTab === 'playlists'" 
+        (click)="setActiveTab('playlists')"
+        class="nav-btn"
+      >
+        <i class="fas fa-list"></i>
+        <span class="nav-label">Playlists</span>
+      </button>
+    </nav>
+    
+    <div class="user-actions">
+      <button class="icon-btn" title="Settings">
+        <i class="fas fa-cog"></i>
+      </button>
+      <button class="icon-btn" title="User Profile">
+        <i class="fas fa-user"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div [ngSwitch]="activeTab" class="tab-content">
+      
+      <!-- Library View -->
+      <div *ngSwitchCase="'library'" class="tab-pane">
+        <app-library></app-library>
+      </div>
+      
+      <!-- Search View -->
+      <div *ngSwitchCase="'search'" class="tab-pane">
+        <app-search></app-search>
+      </div>
+      
+      <!-- Playlists View -->
+      <div *ngSwitchCase="'playlists'" class="tab-pane">
+        <app-playlist></app-playlist>
+      </div>
+      
+      <!-- Default/Error View -->
+      <div *ngSwitchDefault class="tab-pane">
+        <div class="welcome-screen">
+          <i class="fas fa-headphones"></i>
+          <h2>Welcome to Harmony Player</h2>
+          <p>Select a tab to start exploring your music</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Music Player (Always visible at bottom) -->
+  <footer class="player-footer">
+    <app-player></app-player>
+  </footer>
+
+  <!-- Optional: Now Playing Info Modal -->
+  <div *ngIf="showNowPlaying" class="now-playing-modal">
+    <!-- You can expand this with more song details -->
+  </div>
+</div>
